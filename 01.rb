@@ -1,4 +1,4 @@
-def prepare_input
+def sum_by_elf
   sums = []
   sum = 0
 
@@ -18,12 +18,9 @@ def prepare_input
 end
 
 def most_calories
-  prepare_input.max
+  sum_by_elf.max
 end
 
 def top_three
-  prepare_input.sort![-3..].reduce(:+)
+  sum_by_elf.sort![-3..].reduce(:+)
 end
-
-puts most_calories
-puts top_three
