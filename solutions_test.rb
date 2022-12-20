@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'04').each do |day|
+('01'..'05').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -37,5 +37,12 @@ class SolutionsTest < Minitest::Test
     assert count_contained(lines) == 483
 
     assert count_overlapped(lines) == 874
+  end
+
+  def test_solution_05_is_correct
+    lines = get_lines('inputs/05.txt')
+
+    assert top_of_stacks(lines) == 'VRWBSFZWM'
+    assert top_of_stacks_2(lines) == 'RBTWJWMCF'
   end
 end

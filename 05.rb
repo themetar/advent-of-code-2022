@@ -1,11 +1,3 @@
-def get_lines(file_path)
-    File.open(file_path, 'r') do |file|
-        file.each_line.collect { |line| line.rstrip }
-    end
-end
-
-lines = get_lines('inputs/05.txt')
-
 def split_input(lines)
     break_index = lines.find_index('') # empty line between crates and instructions
 
@@ -38,8 +30,6 @@ def top_of_stacks(lines)
     stacks.collect { |stack| stack.last || '' }.join('')
 end
 
-puts top_of_stacks(lines)
-
 def top_of_stacks_2(lines)
     stacks, instructions = split_input(lines)
 
@@ -53,5 +43,3 @@ def top_of_stacks_2(lines)
 
     stacks.collect { |stack| stack.last || '' }.join('')
 end
-
-puts top_of_stacks_2(lines)
