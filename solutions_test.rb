@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'06').each do |day|
+('01'..'07').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -53,4 +53,13 @@ class SolutionsTest < Minitest::Test
 
     assert start_of_data_at(lines.first, 14) == 2950    
   end
+
+  def test_solution_07_is_correct
+    lines = get_lines('inputs/07.txt')
+
+    assert sum_of_sizes(lines) == 1350966
+    
+    assert dir_to_del_size(lines) == 6296435
+  end
+
 end
