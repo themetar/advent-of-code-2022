@@ -1,8 +1,4 @@
-def get_lines(file_path)
-    File.open(file_path, 'r') do |file|
-        file.each_line.collect { |line| line.strip }
-    end
-end
+require './common'
 
 def sum_priorities(lines)
     lines.inject(0) do |acc, line|
@@ -24,9 +20,6 @@ def sum_priorities(lines)
     end
 end
 
-puts sum_priorities(get_lines('inputs/03.txt'))
-
-
 def sum_badge_priorities(lines)
     lines.each_slice(3).inject(0) do |acc, three_lines|
         first, second, third = three_lines.collect { |line| line.each_char.to_a }
@@ -41,5 +34,3 @@ def sum_badge_priorities(lines)
         acc + priority
     end
 end
-
-puts sum_badge_priorities(get_lines('inputs/03.txt'))
