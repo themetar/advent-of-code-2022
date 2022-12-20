@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'07').each do |day|
+('01'..'08').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -58,8 +58,15 @@ class SolutionsTest < Minitest::Test
     lines = get_lines('inputs/07.txt')
 
     assert sum_of_sizes(lines) == 1350966
-    
+
     assert dir_to_del_size(lines) == 6296435
   end
 
+  def test_solution_08_is_correct
+    lines = get_lines('inputs/08.txt')
+
+    assert visible_trees_count(lines) == 1794
+
+    assert highest_scenic_score(lines) == 199272
+  end
 end
