@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'05').each do |day|
+('01'..'06').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -44,5 +44,13 @@ class SolutionsTest < Minitest::Test
 
     assert top_of_stacks(lines) == 'VRWBSFZWM'
     assert top_of_stacks_2(lines) == 'RBTWJWMCF'
+  end
+
+  def test_solution_06_is_correct
+    lines = get_lines('inputs/06.txt')
+
+    assert start_of_data_at(lines.first, 4) == 1757
+
+    assert start_of_data_at(lines.first, 14) == 2950    
   end
 end
