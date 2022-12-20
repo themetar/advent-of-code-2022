@@ -22,12 +22,6 @@ SCORE_OUTCOMES_CORRECTED = {
   "B Z" => 9,
 }
 
-def total_score(strategy)
-  File.open("inputs/02.txt", "r") do |inputs|
-    inputs.each_line.reduce(0) { |acc, line| acc + strategy[line.strip] }
-  end
+def total_score(lines, strategy)
+  lines.each.reduce(0) { |acc, line| acc + strategy[line.strip] }
 end
-
-puts total_score(SCORE_OUTCOMES)
-
-puts total_score(SCORE_OUTCOMES_CORRECTED)
