@@ -1,26 +1,23 @@
-def sum_by_elf
+def sum_by_elf(lines)
   sums = []
   sum = 0
 
-  File.open("inputs/01.txt", "r") do |inputs|
-    inputs.each_line do |line|
-      line = line.strip
-      if line.empty?
-        sums << sum
-        sum = 0
-      else
-        sum += line.to_i
-      end
+  lines.each do |line|
+    if line.empty?
+      sums << sum
+      sum = 0
+    else
+      sum += line.to_i
     end
   end
 
   sums
 end
 
-def most_calories
-  sum_by_elf.max
+def most_calories(lines)
+  sum_by_elf(lines).max
 end
 
-def top_three
-  sum_by_elf.sort![-3..].reduce(:+)
+def top_three(lines)
+  sum_by_elf(lines).sort![-3..].reduce(:+)
 end
