@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'09').each do |day|
+('01'..'10').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -98,5 +98,20 @@ class SolutionsTest < Minitest::Test
     assert visited_positions_rope(input_2_1.lines.collect(&:strip)) == 36
 
     assert visited_positions_rope(lines) == 2793
+  end
+
+  def test_solution_10_is_correct
+    lines = get_lines('inputs/10.txt')
+
+    assert signal_strength_at(lines, [20, 60, 100, 140, 180, 220]) == 14060
+
+    papkfkej = %{###...##..###..#..#.####.#..#.####...##.
+#..#.#..#.#..#.#.#..#....#.#..#.......#.
+#..#.#..#.#..#.##...###..##...###.....#.
+###..####.###..#.#..#....#.#..#.......#.
+#....#..#.#....#.#..#....#.#..#....#..#.
+#....#..#.#....#..#.#....#..#.####..##..}
+
+    assert render_screen(lines) == papkfkej
   end
 end
