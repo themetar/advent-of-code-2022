@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'08').each do |day|
+('01'..'09').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -68,5 +68,35 @@ class SolutionsTest < Minitest::Test
     assert visible_trees_count(lines) == 1794
 
     assert highest_scenic_score(lines) == 199272
+  end
+
+  def test_solution_09_is_correct
+    lines = get_lines('inputs/09.txt')
+
+    assert visited_positions(lines) == 6745
+
+    input_2_0 = %{R 4
+      U 4
+      L 3
+      D 1
+      R 4
+      D 1
+      L 5
+      R 2}
+
+    assert visited_positions_rope(input_2_0.lines.collect(&:strip)) == 1
+
+      input_2_1 = %{R 5
+      U 8
+      L 8
+      D 3
+      R 17
+      D 10
+      L 25
+      U 20}
+
+    assert visited_positions_rope(input_2_1.lines.collect(&:strip)) == 36
+
+    assert visited_positions_rope(lines) == 2793
   end
 end
