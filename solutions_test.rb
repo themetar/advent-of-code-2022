@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'11').each do |day|
+('01'..'12').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -121,5 +121,13 @@ class SolutionsTest < Minitest::Test
     assert monkey_business(lines, 20) == 58794
 
     assert monkey_business_2(lines, 10000) == 20151213744
+  end
+
+  def test_solution_12_is_correct
+    lines = get_lines('inputs/12.txt')
+
+    assert fewest_steps(lines) == 528
+
+    assert fewest_steps_2(lines) == 522
   end
 end
