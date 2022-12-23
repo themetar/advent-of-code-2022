@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'13').each do |day|
+('01'..'14').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -136,5 +136,13 @@ class SolutionsTest < Minitest::Test
 
     assert sum_of_pairs_indices(lines) == 5588
     assert decoder_key(lines) == 23958
+  end
+
+  def test_solution_14_is_correct
+    lines = get_lines('inputs/14.txt')
+
+    assert units_sand(lines) == 793
+
+    assert units_sand_2(lines) == 24166
   end
 end
