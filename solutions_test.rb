@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'14').each do |day|
+('01'..'15').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -144,5 +144,18 @@ class SolutionsTest < Minitest::Test
     assert units_sand(lines) == 793
 
     assert units_sand_2(lines) == 24166
+  end
+
+  def test_solution_15_is_correct
+    lines = get_lines('inputs/15.txt')
+
+    sensors = parse_sensors_data(lines)
+
+    query_y = 2000000
+    
+    assert positions_cant_contain_beacon(sensors, query_y) == 6275922
+
+    assert tuning_frequency(sensors) == 11747175442119
+
   end
 end
