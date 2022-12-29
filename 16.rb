@@ -19,7 +19,7 @@ def valves_data(lines)
     flow = data[2].to_i
     connected_to = data[3].split(', ')
 
-    {name: name, flow: flow, connected_to: connected_to}
+    {name: name, flow: flow, connected_to: connected_to, open: false}
   end
 end
 
@@ -67,23 +67,91 @@ distance_matrix.each_with_index do |row, i|
   print '---' * (valves.length + 1), "\n"
 end
 
-time = 30
+start_valve_id = 0 # AA
+start_valve = valves[start_valve_id] # AA
 
-# gain heuristic
+valves_in_consideration = valves.select { |v| !(v == start_valve || v[:open] || v[:flow] == 0) }
 
-current_valve = 0 # AA
+puts valves_in_consideration
 
-puts valves.each_with_index.collect do |valve, index|
-  dist = distance_matrix[current_valve][index]
-  gain_flow = (time - dist - 1) * valve[:flow]
+# TEST SOMETHING
+valves_in_consideration = ['DD', 'BB', 'JJ', 'HH', 'EE', 'CC'].collect { |name| valves[valve_indices[name]] }
+####
 
-  others = valve_indices.values.select { |i| i != current && i != index }
+puts '-----'
 
-  gain_connection = others.collect { |i| (time - dist - 1 - distance_matrix[index][i] - 1) * valves[i][:flow] }
+max_path = [start_valve]
 
-  gain_connection = gain_connection.inject(&:+).to_f / others.length
+total_pressure = proc do |path|
+  time = 30
+  
+  pressure = 0
+  
+  path.each_cons(2) do |pair|
+    v1, v2 = pair
 
-  [valve[:name], gain_flow + gain_connection]
-end.to_a
+    id_1, id_2 = valve_indices[v1[:name]], valve_indices[v2[:name]]
 
+    # print id_1, ' ', id_2, "\n"
 
+    time_to_open = distance_matrix[id_1][id_2] + 1
+
+    # print time, ' ', time_to_open, "\n"
+
+    if time > time_to_open
+      time -= time_to_open
+      pressure += time * v2[:flow]
+    else
+      break
+    end
+  end
+
+  pressure
+end
+
+valves_in_consideration.length.times do
+
+  max_gains = valves_in_consideration.collect do |valve|
+ 
+    insert_points = (1..max_path.length)
+
+    pressures = insert_points.collect { |p| print max_path.dup.insert(p, valve).collect{|v| v[:name]}, "\n"; [total_pressure.call(max_path.dup.insert(p, valve)), p] } # [pressure, insert_point]
+
+    # puts '+++'
+    # # if valve[:name] == 'HH'
+    #   print max_path.collect { |v| v[:name] }, ' ', total_pressure.call(max_path), "\n"
+    #   print valve[:name], ' ', pressures, "\n"
+    # # end
+    # puts '+++'
+
+    best_insert_point = pressures.max { |p1, p2| p1.first <=> p2.first }
+
+    best_insert_point
+  end
+
+  max_pressure = max_gains.max { |g1, g2| g1.first <=> g2.first }
+
+  valve_to_choose_id = max_gains.find_index { |pressure, point| pressure == max_pressure.first }
+
+  valve = valves_in_consideration.delete_at(valve_to_choose_id) # delete from consideration
+
+  point = max_pressure[1] # where to insert
+
+  max_path.insert(point, valve)
+end
+
+puts 
+
+puts max_path
+
+puts total_pressure.call(max_path)
+
+puts
+test_path = ['AA', 'DD', 'BB', 'JJ', 'HH', 'EE', 'CC'].collect { |name| valves[valve_indices[name]] }
+
+puts total_pressure.call(test_path)
+
+puts
+
+puts total_pressure.call(['AA', 'DD', 'BB', 'JJ'].collect { |n| valves[valve_indices[n]] })
+puts total_pressure.call(['AA', 'DD', 'JJ', 'BB'].collect { |n| valves[valve_indices[n]] })
