@@ -158,4 +158,7 @@ class SolutionsTest < Minitest::Test
     assert tuning_frequency(sensors) == 11747175442119
 
   end
+
+  def test_solution_16_is_correct
+    1871
 end
