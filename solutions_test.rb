@@ -3,8 +3,8 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'15').each do |day|
-  File.exist?("./#{day}.rb") && require("./#{day}") or break
+('01'..'18').each do |day|
+  File.exist?("./#{day}.rb") && require("./#{day}") or next
 end
 
 class SolutionsTest < Minitest::Test
@@ -157,5 +157,15 @@ class SolutionsTest < Minitest::Test
 
     assert tuning_frequency(sensors) == 11747175442119
 
+  end
+
+  def test_solution_18_is_correct
+    lines = get_lines('inputs/18.txt')
+
+    voxels = lines.collect { |line| line.split(',').collect(&:to_i) }
+
+    assert count_nontouching_faces(voxels) == 4320
+
+    assert count_exterior_faces(voxels) == 2456
   end
 end
