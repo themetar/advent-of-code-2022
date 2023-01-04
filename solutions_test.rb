@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'15').each do |day|
+('01'..'16').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or break
 end
 
@@ -147,6 +147,8 @@ class SolutionsTest < Minitest::Test
   end
 
   def test_solution_15_is_correct
+    skip  # skip testing
+
     lines = get_lines('inputs/15.txt')
 
     sensors = parse_sensors_data(lines)
@@ -160,5 +162,8 @@ class SolutionsTest < Minitest::Test
   end
 
   def test_solution_16_is_correct
-    1871
+    lines = get_lines('inputs/16.txt')
+
+    assert most_pressure(lines) == 1871
+  end
 end

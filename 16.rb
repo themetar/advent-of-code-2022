@@ -16,7 +16,8 @@ require './common'
 lines = get_lines('inputs/16.txt')
 
 ##
-# Returns distance matrix between valves and 
+# Returns an array of valve info
+#
 def parse_valves_data(lines)
   lines.collect do |line|
     data = /Valve ([A-Z]+) has flow rate=(\d+); tunnels? leads? to valves? ((?:[A-Z]+(?:, )?)+)/.match(line)
@@ -28,12 +29,6 @@ def parse_valves_data(lines)
     {name: name, flow: flow, connected_to: connected_to}
   end
 end
-  
-valves = parse_valves_data(lines)
-
-valve_indices = valves.each_with_index.collect { |v, i| [v[:name], i] }.to_h
-
-connections = valves.collect { |valve| valve[:connected_to].collect { |valve_name| valve_indices[valve_name] } }
 
 ##
 # Returns a distance matrix between nodes
@@ -82,91 +77,210 @@ def get_distance_matrix(connections)
   distance_matrix
 end
 
-distance_matrix = get_distance_matrix(connections)
+def most_pressure(lines)
+  valves = parse_valves_data(lines)
 
+  valve_indices = valves.each_with_index.collect { |v, i| [v[:name], i] }.to_h
 
-total_pressure = proc do |sequence, time|
-  pressure = 0
+  connections = valves.collect { |valve| valve[:connected_to].collect { |valve_name| valve_indices[valve_name] } }
 
-  sequence.each_cons(2) do |pair|
+  distance_matrix = get_distance_matrix(connections)
+
+  total_pressure = proc do |sequence, time|
+    pressure = 0
+
+    sequence.each_cons(2) do |pair|
+        id_1, id_2 = pair
+
+        time_to_open = distance_matrix[id_1][id_2] + 1
+
+        if time > time_to_open
+          time -= time_to_open
+          pressure += time * valves[id_2][:flow]
+        else
+          break
+        end
+    end
+
+    pressure
+  end
+
+  time_to_open_all = proc do |sequence|
+    sequence.each_cons(2).inject(0) do |acc, pair|
       id_1, id_2 = pair
 
       time_to_open = distance_matrix[id_1][id_2] + 1
 
-      if time > time_to_open
-        time -= time_to_open
-        pressure += time * valves[id_2][:flow]
-      else
-        break
-      end
-  end
-
-  pressure
-end
-
-time_to_open_all = proc do |sequence|
-  sequence.each_cons(2).inject(0) do |acc, pair|
-    id_1, id_2 = pair
-
-    time_to_open = distance_matrix[id_1][id_2] + 1
-
-    acc + time_to_open
-  end
-end
-
-start_valve_id = valve_indices['AA'] # AA
-start_valve = valves[start_valve_id] # AA
-
-valves_in_consideration = valves.select { |v| !(v == start_valve || v[:flow] == 0) } .collect { |v| valve_indices[v[:name]] }
-
-stack_of_queues = [valves_in_consideration.dup]
-
-sequence = [start_valve_id]
-
-max = 0
-
-counter = 0
-
-until stack_of_queues.empty?
-  # puts stack_of_queues.collect { |q| q.collect { |v| v[:name] } .join(' ') } .join("\n")
-  # puts
-
-  queue = stack_of_queues[-1] # top of stack
-
-  until queue.empty?
-    sequence << queue.shift
-
-    # puts "seq: " + sequence.collect { |v| v[:name] } .join(' ')
-
-    if time_to_open_all.call(sequence) < 30
-      
-      pressure = total_pressure.call(sequence, 30)
-
-      counter += 1
-
-      max = pressure if pressure > max
-      
-      next_queue = valves_in_consideration.dup
-      sequence.each do |v|
-        next_queue.delete(v)
-      end
-
-      stack_of_queues << next_queue
-
-      queue = stack_of_queues[-1] # update top of stack
-
-      next
-    else
-      sequence.pop
-
-      next  # next in queue
+      acc + time_to_open
     end
   end
 
-  sequence.pop
-  stack_of_queues.pop
+  start_valve_id = valve_indices['AA'] # AA
+  start_valve = valves[start_valve_id] # AA
+
+  valves_in_consideration = valves.select { |v| !(v == start_valve || v[:flow] == 0) } .collect { |v| valve_indices[v[:name]] }
+
+  stack_of_queues = [valves_in_consideration.dup]
+
+  sequence = [start_valve_id]
+
+  max = 0
+
+  counter = 0
+
+  until stack_of_queues.empty?
+    queue = stack_of_queues[-1] # top of stack
+
+    until queue.empty?
+      sequence << queue.shift
+
+      if time_to_open_all.call(sequence) < 30
+        
+        pressure = total_pressure.call(sequence, 30)
+
+        counter += 1
+
+        max = pressure if pressure > max
+        
+        next_queue = valves_in_consideration.dup
+        sequence.each do |v|
+          next_queue.delete(v)
+        end
+
+        stack_of_queues << next_queue
+
+        queue = stack_of_queues[-1] # update top of stack
+
+        next
+      else
+        sequence.pop
+
+        next  # next in queue
+      end
+    end
+
+    sequence.pop
+    stack_of_queues.pop
+  end
+
+  max
 end
 
-puts max
+# def most_pressure_elephant(lines)
+  valves = parse_valves_data(lines)
 
-puts counter
+  valve_indices = valves.each_with_index.collect { |v, i| [v[:name], i] }.to_h
+
+  connections = valves.collect { |valve| valve[:connected_to].collect { |valve_name| valve_indices[valve_name] } }
+
+  distance_matrix = get_distance_matrix(connections)
+
+  total_pressure = proc do |sequence, time|
+    pressure = 0
+
+    sequence.each_cons(2) do |pair|
+        id_1, id_2 = pair
+
+        time_to_open = distance_matrix[id_1][id_2] + 1
+
+        if time > time_to_open
+          time -= time_to_open
+          pressure += time * valves[id_2][:flow]
+        else
+          break
+        end
+    end
+
+    pressure
+  end
+
+  time_to_open_all = proc do |sequence|
+    sequence.each_cons(2).inject(0) do |acc, pair|
+      id_1, id_2 = pair
+
+      time_to_open = distance_matrix[id_1][id_2] + 1
+
+      acc + time_to_open
+    end
+  end
+
+  start_valve_id = valve_indices['AA'] # AA
+  start_valve = valves[start_valve_id] # AA
+
+  valves_in_consideration = valves.select { |v| !(v == start_valve || v[:flow] == 0) } .collect { |v| valve_indices[v[:name]] }
+
+  stack_of_queues = [valves_in_consideration.dup]
+
+  sequence = [start_valve_id]
+
+  pressure_by_valve_combo = Hash.new(0)
+
+  shorter_index_lookup = (valves_in_consideration.zip (0...valves_in_consideration.length).to_a).to_h
+
+  until stack_of_queues.empty?
+    queue = stack_of_queues[-1] # top of stack
+
+    until queue.empty?
+      sequence << queue.shift
+
+      if time_to_open_all.call(sequence) < 26
+        
+        pressure = total_pressure.call(sequence, 26)
+
+        fingerprint = sequence[1..].inject(0) { |acc, valve_id| acc + (1 << shorter_index_lookup[valve_id]) }  # e.g.: seqence uses valves 1, 2 and 5; binary representaiton will be '100110'
+
+        if fingerprint == 0b110001000000110 || fingerprint == 0b1100010111000
+          puts fingerprint, pressure, time_to_open_all.call(sequence)
+          puts '---'
+          puts
+        end
+        
+        pressure_by_valve_combo[fingerprint] = pressure if pressure > pressure_by_valve_combo[fingerprint]  # keep the best (largest) pressure
+        
+        next_queue = valves_in_consideration.dup
+        sequence.each do |v|
+          next_queue.delete(v)
+        end
+
+        stack_of_queues << next_queue
+
+        queue = stack_of_queues[-1] # update top of stack
+
+        next
+      else
+        sequence.pop
+
+        next  # next in queue
+      end
+    end
+
+    sequence.pop
+    stack_of_queues.pop
+  end
+
+  max = 0
+
+  (0...(pressure_by_valve_combo.size - 1)).each do |i|
+    ((i + 1)...(pressure_by_valve_combo.size)).each do |j|
+
+      combo_i = pressure_by_valve_combo.keys[i]
+      combo_j = pressure_by_valve_combo.keys[j]
+
+      if combo_i & combo_j == 0
+        total = pressure_by_valve_combo[combo_i] + pressure_by_valve_combo[combo_j]
+
+        if total > max
+          puts "%015b %015b %d %d %d" % [combo_i, combo_j, pressure_by_valve_combo[combo_i], pressure_by_valve_combo[combo_j], total]
+          max = total
+        end
+      end
+    end
+  end
+
+  max
+
+  puts pressure_by_valve_combo.keys.inject(&:|).to_s(2)
+
+# end
+
+# puts most_pressure_elephant(lines)
