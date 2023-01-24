@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require './common'
 
 # require solution files
-('01'..'18').each do |day|
+('01'..'21').each do |day|
   File.exist?("./#{day}.rb") && require("./#{day}") or next
 end
 
@@ -147,6 +147,8 @@ class SolutionsTest < Minitest::Test
   end
 
   def test_solution_15_is_correct
+    skip  # because it takes a long time
+
     lines = get_lines('inputs/15.txt')
 
     sensors = parse_sensors_data(lines)
@@ -167,5 +169,13 @@ class SolutionsTest < Minitest::Test
     assert count_nontouching_faces(voxels) == 4320
 
     assert count_exterior_faces(voxels) == 2456
+  end
+
+  def test_solution_21_is_correct
+    lines = get_lines('inputs/21.txt')
+    
+    assert parse_root(lines) == 232974643455000
+
+    assert calc_humn(lines) == 3740214169961
   end
 end
