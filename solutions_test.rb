@@ -161,6 +161,14 @@ class SolutionsTest < Minitest::Test
 
   end
 
+  def test_solution_17_is_correct
+    line = get_lines('inputs/17.txt').first
+
+    assert simulate_rocks(line, 2022) == 3193
+
+    assert simulate_rocks(line, 1000000000000) == 1577650429835
+  end
+  
   def test_solution_18_is_correct
     lines = get_lines('inputs/18.txt')
 
