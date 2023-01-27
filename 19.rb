@@ -5,7 +5,6 @@ lines = get_lines('inputs/19.txt')
 blueprints = lines.collect do |line|
   costs = {}
   line.scan(/Each (\w+) robot costs (\d+) (\w+)(?: and (\d+) (\w+))?/) do |robot_type, cost1, material1, cost2, material2|
-    # puts _, cost1, material1, cost2, material2
     costs[robot_type.to_sym] = {material1.to_sym => cost1.to_i}
     costs[robot_type.to_sym][material2.to_sym] = cost2.to_i unless cost2.nil?
   end
@@ -38,7 +37,50 @@ next_states = Proc.new do |state|
   states << state.dup # build nothing
 end
 
-test = state.dup
-test[:ore] = 10
-# puts test
-print next_states.call(test), "\n"
+# test = state.dup
+# test[:ore] = 10
+# # puts test
+# print next_states.call(test), "\n"
+
+stackesque = [[state]]
+
+max_obsidian = 0
+
+loop do
+  break if stackesque.empty?
+
+  if stackesque.last.length == 0
+    stackesque.pop
+    next
+  end
+
+  # !!!!
+  if stackesque.length == 6
+    stackesque.each do |level|
+      print level, "\n" #, 'quoi?', "\n"
+    end
+    break
+  end
+  # !!!
+
+  state = stackesque.last.pop
+
+  if stackesque.length == 18 # 24 + 1
+    max_obsidian = state[:obsidian] if state[:obsidian] > max_obsidian    
+    next
+  end
+
+  # build robot
+  build_states = next_states.call(state)
+  # increment resources
+  build_states.each do |st|
+    [:ore, :clay, :obsidian, :geode].each do |material|
+      st[material] += st[(material.to_s + '_robots').to_sym]
+    end
+  end
+
+  stackesque << build_states
+end
+
+puts max_obsidian
+
