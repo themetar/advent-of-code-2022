@@ -179,6 +179,14 @@ class SolutionsTest < Minitest::Test
     assert count_exterior_faces(voxels) == 2456
   end
 
+  def test_solution_20_is_correct
+    numbers = get_lines('inputs/20.txt').collect(&:to_i)
+
+    assert mix_numbers(numbers) == 27726
+
+    assert ten_mix_numbers(numbers) == 4275451658004
+  end
+
   def test_solution_21_is_correct
     lines = get_lines('inputs/21.txt')
     
